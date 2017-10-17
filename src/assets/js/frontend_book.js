@@ -159,6 +159,7 @@ window.FrontendBook = window.FrontendBook || {};
          * Whenever the provider changes the available appointment date - time periods must be updated.
          */
         $('#select-provider').change(function() {
+			FrontendBook.googleSync(); //Craig Tucker googleSync mod 1
             FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
                     $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
@@ -192,6 +193,7 @@ window.FrontendBook = window.FrontendBook || {};
                 $('#select-provider').append(new Option('- ' +EALang['any_provider'] + ' -', 'any-provider'));
             }
 
+			FrontendBook.googleSync(); //Craig Tucker googleSync mod 2
             FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
                     $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
@@ -336,6 +338,14 @@ window.FrontendBook = window.FrontendBook || {};
             }, 300); // There is no draw event unfortunately.
         })
     };
+
+	//Google sync prior to viewing the calendar C. Tucker --Start	
+	exports.googleSync = function() {
+		var getUrl = GlobalVariables.baseUrl + '/index.php/google/sync/' + $('#select-provider').val();
+		jQuery.get(getUrl,console.log('Google sync successful'),'json');
+	}
+	//Google sync prior to viewing the calendar C. Tucker --End	
+
 
     /**
      * This function validates the customer's data input. The user cannot continue
