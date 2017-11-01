@@ -131,6 +131,7 @@ class Email {
         $mailer->FromName = $company['company_name'];
         $mailer->AddAddress($recipientEmail->get());
         $mailer->Subject = $title->get();
+        $mailer->AddEmbeddedImage('assets/img/logo.png', 'logo');
         $mailer->Body    = $html;
 
         if (!$mailer->Send()) {
@@ -200,6 +201,7 @@ class Email {
         $mailer->FromName = $company['company_name'];
         $mailer->AddAddress($recipientEmail->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = $this->framework->lang->line('appointment_cancelled_title');
+        $mailer->AddEmbeddedImage('img/logo_banner.png', 'logo_banner');
         $mailer->Body = $html;
 
         if (!$mailer->Send()) {
@@ -234,6 +236,7 @@ class Email {
         $mailer->FromName = $company['company_name'];
         $mailer->AddAddress($recipientEmail->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = $this->framework->lang->line('new_account_password');
+        $mailer->AddEmbeddedImage('img/logo_banner.png', 'logo_banner');
         $mailer->Body = $html;
 
         if (!$mailer->Send()) {

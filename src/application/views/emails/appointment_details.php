@@ -3,12 +3,10 @@
     <title>Appointment Details</title>
 </head>
 <body style="font: 13px arial, helvetica, tahoma;">
-    <div class="email-container" style="width: 650px; border: 1px solid #eee;">
-        <div id="header" style="background-color: #3DD481; border-bottom: 4px solid #1A865F;
+    <div class="email-container">
+        <div id="header" style="background-color: #F7F7F7; border-bottom: 4px solid #B3B3B3;
                 height: 45px; padding: 10px 15px;">
-            <strong id="logo" style="color: white; font-size: 20px;
-                    text-shadow: 1px 1px 1px #8F8888; margin-top: 10px; display: inline-block">
-                    $company_name</strong>
+            <img src="cid:logo">
         </div>
 
         <div id="content" style="padding: 10px 15px;">
@@ -60,7 +58,7 @@
         </div>
 
         <div id="footer" style="padding: 10px; text-align: center; margin-top: 10px;
-                border-top: 1px solid #EEE; background: #FAFAFA;">
+                border-top: 1px solid #EEE; background: #F7F7F7;">
             Powered by
             <a href="http://easyappointments.org" style="text-decoration: none;">Easy!Appointments</a>
             |
