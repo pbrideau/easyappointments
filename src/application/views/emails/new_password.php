@@ -4,8 +4,7 @@
 </head>
 <body style="font: 13px arial, helvetica, tahoma;">
     <div class="email-container" style="width: 650px; border: 1px solid #eee;">
-        <div id="header" style="background-color: #F7F7F7; border-bottom: 4px solid #B3B3B3;
-                height: 45px; padding: 10px 15px;">
+        <div id="header" style="background-color: #F7F7F7; border-bottom: 4px solid #B3B3B3; padding: 10px 15px;">
             <img src="cid:logo">
         </div>
 
