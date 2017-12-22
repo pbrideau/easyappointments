@@ -27,6 +27,10 @@
     <link
         rel="stylesheet"
         type="text/css"
+        href="<?php echo base_url('assets/ext/jquery-datetime/jquery.datetimepicker.min.css'); ?>">
+    <link
+        rel="stylesheet"
+        type="text/css"
         href="<?php echo base_url('assets/css/frontend.css'); ?>">
     <link
         rel="stylesheet"
@@ -49,32 +53,6 @@
     <div id="main" class="container">
         <div class="wrapper row">
             <div id="book-appointment-wizard" class="col-xs-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
-
-                <?php
-                    // ------------------------------------------------------
-                    // FRAME TOP BAR
-                    // ------------------------------------------------------ ?>
-
-                <div id="header">
-                    <span id="company-name"><?php echo $company_name; ?></span>
-
-                    <div id="steps">
-                        <div id="step-1" class="book-step active-step" title="<?php echo $this->lang->line('step_one_title'); ?>">
-                            <strong>1</strong>
-                        </div>
-
-                        <div id="step-2" class="book-step" title="<?php echo $this->lang->line('step_two_title'); ?>">
-                            <strong>2</strong>
-                        </div>
-                        <div id="step-3" class="book-step" title="<?php echo $this->lang->line('step_three_title'); ?>">
-                            <strong>3</strong>
-                        </div>
-                        <div id="step-4" class="book-step" title="<?php echo $this->lang->line('step_four_title'); ?>">
-                            <strong>4</strong>
-                        </div>
-                    </div>
-                </div>
-
                 <?php
                     // ------------------------------------------------------
                     // CANCEL APPOINTMENT BUTTON
@@ -121,8 +99,6 @@
 
                 <div id="wizard-frame-1" class="wizard-frame">
                     <div class="frame-container">
-                        <h3 class="frame-title"><?php echo $this->lang->line('step_one_title'); ?></h3>
-
                         <div class="frame-content">
                             <div class="form-group">
                                 <label for="select-service">
@@ -186,74 +162,24 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="select-provider">
                                     <strong><?php echo $this->lang->line('select_provider'); ?></strong>
                                 </label>
 
                                 <select id="select-provider" class="col-md-4 form-control"></select>
                             </div>
-
-                            <div id="service-description" style="display:none;"></div>
                         </div>
-                    </div>
-
-                    <div class="command-buttons">
-                        <button type="button" id="button-next-1" class="btn button-next btn-primary"
-                                data-step_index="1">
-                            <?php echo $this->lang->line('next'); ?>
-                            <span class="glyphicon glyphicon-forward"></span>
-                        </button>
-                    </div>
-                </div>
-
-                <?php
-                    // ------------------------------------------------------
-                    // SELECT APPOINTMENT DATE
-                    // ------------------------------------------------------ ?>
-
-                <div id="wizard-frame-2" class="wizard-frame" style="display:none;">
-                    <div class="frame-container">
-
-                        <h3 class="frame-title"><?php echo $this->lang->line('step_two_title'); ?></h3>
 
                         <div class="frame-content row">
                             <div class="col-xs-12 col-sm-6">
                                 <div id="select-date"></div>
+                                <div class="form-group">
+                                    <label for="notes" class="control-label"><?php echo $this->lang->line('notes'); ?></label>
+                                    <textarea id="notes" maxlength="500" class="form-control" rows="3"></textarea>
+                                </div>
                             </div>
 
-                            <div class="col-xs-12 col-sm-6">
-                                <?php // Available hours are going to be fetched via ajax call. ?>
-                                <div id="available-hours"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="command-buttons">
-                        <button type="button" id="button-back-2" class="btn button-back btn-default"
-                                data-step_index="2">
-                            <span class="glyphicon glyphicon-backward"></span>
-                            <?php echo $this->lang->line('back'); ?>
-                        </button>
-                        <button type="button" id="button-next-2" class="btn button-next btn-primary"
-                                data-step_index="2">
-                            <?php echo $this->lang->line('next'); ?>
-                            <span class="glyphicon glyphicon-forward"></span>
-                        </button>
-                    </div>
-                </div>
-
-                <?php
-                    // ------------------------------------------------------
-                    // ENTER CUSTOMER DATA
-                    // ------------------------------------------------------ ?>
-
-                <div id="wizard-frame-3" class="wizard-frame" style="display:none;">
-                    <div class="frame-container">
-
-                        <h3 class="frame-title"><?php echo $this->lang->line('step_three_title'); ?></h3>
-
-                        <div class="frame-content row">
                             <div class="col-xs-12 col-sm-6">
                                 <div class="form-group">
                                     <label for="first-name" class="control-label"><?php echo $this->lang->line('first_name'); ?> *</label>
@@ -272,55 +198,18 @@
                                     <input type="text" id="phone-number" class="required form-control" maxlength="60" />
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-xs-12 col-sm-6">
-                                <div class="form-group">
-                                    <label for="address" class="control-label"><?php echo $this->lang->line('address'); ?></label>
-                                    <input type="text" id="address" class="form-control" maxlength="250" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="city" class="control-label"><?php echo $this->lang->line('city'); ?></label>
-                                    <input type="text" id="city" class="form-control" maxlength="120" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="zip-code" class="control-label"><?php echo $this->lang->line('zip_code'); ?></label>
-                                    <input type="text" id="zip-code" class="form-control" maxlength="120" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="notes" class="control-label"><?php echo $this->lang->line('notes'); ?></label>
-                                    <textarea id="notes" maxlength="500" class="form-control" rows="3"></textarea>
-                                </div>
-                            </div>
-
+                        <div class="frame-content row">
                             <em id="form-message" class="text-danger"><?php echo $this->lang->line('fields_are_required'); ?></em>
                         </div>
-                    </div>
 
-                    <div class="command-buttons">
-                        <button type="button" id="button-back-3" class="btn button-back btn-default"
-                                data-step_index="3"><span class="glyphicon glyphicon-backward"></span>
-                            <?php echo $this->lang->line('back'); ?>
-                        </button>
-                        <button type="button" id="button-next-3" class="btn button-next btn-primary"
-                                data-step_index="3">
-                            <?php echo $this->lang->line('next'); ?>
-                            <span class="glyphicon glyphicon-forward"></span>
-                        </button>
-                    </div>
-                </div>
-
-                <?php
-                    // ------------------------------------------------------
-                    // APPOINTMENT DATA CONFIRMATION
-                    // ------------------------------------------------------ ?>
-
-                <div id="wizard-frame-4" class="wizard-frame" style="display:none;">
-                    <div class="frame-container">
-                        <h3 class="frame-title"><?php echo $this->lang->line('step_four_title'); ?></h3>
                         <div class="frame-content row">
-                            <div id="appointment-details" class="col-xs-12 col-sm-6"></div>
-                            <div id="customer-details" class="col-xs-12 col-sm-6"></div>
+                            <div class="col-xs-12 col-sm-12">
+
+                            </div>
                         </div>
+
                         <?php if ($this->settings_model->get_setting('require_captcha') === '1'): ?>
                         <div class="frame-content row">
                             <div class="col-sm-12 col-md-6">
@@ -334,26 +223,19 @@
                             </div>
                         </div>
                         <?php endif; ?>
+
+                        <div class="command-buttons">
+                            <form id="book-appointment-form" style="display:inline-block" method="post">
+                                <button id="book-appointment-submit" type="button" class="btn btn-success">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                    <?php echo (!$manage_mode) ? $this->lang->line('confirm') : $this->lang->line('update');?>
+                                </button>
+                                <input type="hidden" name="csrfToken" />
+                                <input type="hidden" name="post_data" />
+                            </form>
+                        </div>
                     </div>
 
-                    <div class="command-buttons">
-                        <button type="button" id="button-back-4" class="btn button-back btn-default"
-                                data-step_index="4">
-                            <span class="glyphicon glyphicon-backward"></span>
-                            <?php echo $this->lang->line('back'); ?>
-                        </button>
-                        <form id="book-appointment-form" style="display:inline-block" method="post">
-                            <button id="book-appointment-submit" type="button" class="btn btn-success">
-                                <span class="glyphicon glyphicon-ok"></span>
-                                <?php
-                                    echo (!$manage_mode) ? $this->lang->line('confirm')
-                                            : $this->lang->line('update');
-                                ?>
-                            </button>
-                            <input type="hidden" name="csrfToken" />
-                            <input type="hidden" name="post_data" />
-                        </form>
-                    </div>
                 </div>
 
                 <?php
@@ -368,12 +250,12 @@
                     <span id="select-language" class="label label-success">
     		        	<?php echo ucfirst($this->config->item('language')); ?>
     		        </span>
-                    |
-                    <a href="<?php echo site_url('backend'); ?>">
+                    <!-- | -->
+                    <!-- <a href="<?php echo site_url('backend'); ?>">
                         <?php echo $this->session->userdata('user_id')
-                            ? $this->lang->line('backend_section') 
+                            ? $this->lang->line('backend_section')
                             : $this->lang->line('login'); ?>
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
@@ -418,6 +300,9 @@
     <script
         type="text/javascript"
         src="<?php echo base_url('assets/ext/jquery-qtip/jquery.qtip.min.js'); ?>"></script>
+    <script
+        type="text/javascript"
+        src="<?php echo base_url('assets/ext/jquery-datetime/jquery.datetimepicker.full.min.js'); ?>"></script>
     <script
         type="text/javascript"
         src="<?php echo base_url('assets/ext/bootstrap/js/bootstrap.min.js'); ?>"></script>

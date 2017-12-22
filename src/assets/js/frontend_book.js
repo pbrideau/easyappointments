@@ -60,40 +60,18 @@ window.FrontendBook = window.FrontendBook || {};
             }
         });
 
-        $('#select-date').datepicker({
-            dateFormat: 'dd-mm-yy',
-            firstDay: 1, // Monday
+        $('#select-date').datetimepicker({
             minDate: 0,
-            defaultDate: Date.today(),
-
-            dayNames: [
-                    EALang['sunday'], EALang['monday'], EALang['tuesday'], EALang['wednesday'],
-                    EALang['thursday'], EALang['friday'], EALang['saturday']],
-            dayNamesShort: [EALang['sunday'].substr(0,3), EALang['monday'].substr(0,3),
-                    EALang['tuesday'].substr(0,3), EALang['wednesday'].substr(0,3),
-                    EALang['thursday'].substr(0,3), EALang['friday'].substr(0,3),
-                    EALang['saturday'].substr(0,3)],
-            dayNamesMin: [EALang['sunday'].substr(0,2), EALang['monday'].substr(0,2),
-                    EALang['tuesday'].substr(0,2), EALang['wednesday'].substr(0,2),
-                    EALang['thursday'].substr(0,2), EALang['friday'].substr(0,2),
-                    EALang['saturday'].substr(0,2)],
-            monthNames: [EALang['january'], EALang['february'], EALang['march'], EALang['april'],
-                    EALang['may'], EALang['june'], EALang['july'], EALang['august'], EALang['september'],
-                    EALang['october'], EALang['november'], EALang['december']],
-            prevText: EALang['previous'],
-            nextText: EALang['next'],
-            currentText: EALang['now'],
-            closeText: EALang['close'],
-
-            onSelect: function(dateText, instance) {
-                FrontendBookApi.getAvailableHours(dateText);
-                FrontendBook.updateConfirmFrame();
-            },
-
-            onChangeMonthYear: function(year, month, instance) {
-                var currentDate = new Date(year, month - 1, 1);
-                FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
-                        currentDate.toString('yyyy-MM-dd'));
+            formatDate:'yyyy-MM-dd',
+            defaultTime: new Date().toString('HH:mm'),
+            inline:true,
+            onSelectDate: function(dp,$input){
+                var self = this;
+                FrontendBookApi.getAvailableHours(dp.toString('yyyy-MM-dd'), function(hours) {
+                    self.setOptions({
+                        allowTimes: hours
+                    });
+                });
             }
         });
 
@@ -108,7 +86,7 @@ window.FrontendBook = window.FrontendBook || {};
                     GlobalVariables.providerData, GlobalVariables.customerData);
         } else {
             var $selectProvider = $('#select-provider');
-            var $selectService = $('#select-service'); 
+            var $selectService = $('#select-service');
 
             // Check if a specific service was selected (via URL parameter).
             var selectedServiceId = GeneralFunctions.getUrlParameter(location.href, 'service');
@@ -122,13 +100,13 @@ window.FrontendBook = window.FrontendBook || {};
 
             $selectService.trigger('change'); // Load the available hours.
 
-            // Check if a specific provider was selected. 
+            // Check if a specific provider was selected.
             var selectedProviderId = GeneralFunctions.getUrlParameter(location.href, 'provider');
-            
+
             if (selectedProviderId && $selectProvider.find('option[value="' + selectedProviderId + '"]').length === 0) {
-                // Select a service of this provider in order to make the provider available in the select box. 
+                // Select a service of this provider in order to make the provider available in the select box.
                 for (var index in GlobalVariables.availableProviders) {
-                    var provider = GlobalVariables.availableProviders[index]; 
+                    var provider = GlobalVariables.availableProviders[index];
 
                     if (provider.id === selectedProviderId && provider.services.length > 0) {
                         $selectService
@@ -147,6 +125,12 @@ window.FrontendBook = window.FrontendBook || {};
             }
 
         }
+        var selected_date = ($('#select-date').datetimepicker('getValue')).toString('yyyy-MM-dd');
+        FrontendBookApi.getAvailableHours(selected_date, function(hours) {
+            $('#select-date').datetimepicker('setOptions', {
+                allowTimes: hours
+            });
+        });
     };
 
     /**
@@ -160,8 +144,6 @@ window.FrontendBook = window.FrontendBook || {};
          */
         $('#select-provider').change(function() {
 			FrontendBook.googleSync(); //Craig Tucker googleSync mod 1
-            FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
-                    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
         });
 
@@ -194,8 +176,6 @@ window.FrontendBook = window.FrontendBook || {};
             }
 
 			FrontendBook.googleSync(); //Craig Tucker googleSync mod 2
-            FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
-                    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
              _updateServiceDescription($('#select-service').val(), $('#service-description'));
         });
@@ -319,7 +299,10 @@ window.FrontendBook = window.FrontendBook || {};
          * @param {jQuery.Event} event
          */
         $('#book-appointment-submit').click(function(event) {
-            FrontendBookApi.registerAppointment();
+            if(FrontendBook.validateCustomerForm()) {
+                FrontendBook.updateConfirmFrame();
+                FrontendBookApi.registerAppointment();
+            }
         });
 
         /**
@@ -330,21 +313,14 @@ window.FrontendBook = window.FrontendBook || {};
         $('.captcha-title small').click(function(event) {
             $('.captcha-image').attr('src', GlobalVariables.baseUrl + '/index.php/captcha?' + Date.now());
         });
-
-
-        $('#select-date').on('mousedown', '.ui-datepicker-calendar td', function(event) {
-            setTimeout(function() {
-                FrontendBookApi.applyPreviousUnavailableDates(); // New jQuery UI version will replace the td elements.
-            }, 300); // There is no draw event unfortunately.
-        })
     };
 
-	//Google sync prior to viewing the calendar C. Tucker --Start	
+	//Google sync prior to viewing the calendar C. Tucker --Start
 	exports.googleSync = function() {
 		var getUrl = GlobalVariables.baseUrl + '/index.php/google/sync/' + $('#select-provider').val();
 		jQuery.get(getUrl,console.log('Google sync successful'),'json');
 	}
-	//Google sync prior to viewing the calendar C. Tucker --End	
+	//Google sync prior to viewing the calendar C. Tucker --End
 
 
     /**
@@ -354,7 +330,7 @@ window.FrontendBook = window.FrontendBook || {};
      * @return {Boolean} Returns the validation result.
      */
     function _validateCustomerForm() {
-        $('#wizard-frame-3 input').css('border', '');
+        $('.form-group').removeClass('has-error');
 
         try {
             // Validate required fields.
@@ -362,7 +338,6 @@ window.FrontendBook = window.FrontendBook || {};
             $('.required').each(function() {
                 if ($(this).val() == '') {
                     $(this).parents('.form-group').addClass('has-error');
-                    // $(this).css('border', '2px solid red');
                     missingRequiredField = true;
                 }
             });
@@ -373,9 +348,10 @@ window.FrontendBook = window.FrontendBook || {};
             // Validate email address.
             if (!GeneralFunctions.validateEmail($('#email').val())) {
                 $('#email').parents('.form-group').addClass('has-error');
-                // $('#email').css('border', '2px solid red');
                 throw EALang['invalid_email'];
             }
+
+            // TODO : Validate phone number.
 
             return true;
         } catch(exc) {
@@ -384,69 +360,13 @@ window.FrontendBook = window.FrontendBook || {};
         }
     }
 
+    exports.validateCustomerForm = _validateCustomerForm;
+
     /**
      * Every time this function is executed, it updates the confirmation page with the latest
      * customer settings and input for the appointment booking.
      */
     exports.updateConfirmFrame = function() {
-        // Appointment Details
-        var selectedDate = $('#select-date').datepicker('getDate');
-
-        if (selectedDate !== null) {
-            selectedDate = GeneralFunctions.formatDate(selectedDate, GlobalVariables.dateFormat);
-        }
-
-        var selServiceId = $('#select-service').val();
-        var servicePrice;
-        var serviceCurrency;
-
-        $.each(GlobalVariables.availableServices, function(index, service) {
-            if (service.id == selServiceId) {
-                servicePrice = '<br>' + service.price;
-                serviceCurrency = service.currency;
-                return false; // break loop
-            }
-        });
-
-        var html =
-            '<h4>' + $('#select-service option:selected').text() + '</h4>' +
-            '<p>'
-                + '<strong class="text-primary">'
-                    + $('#select-provider option:selected').text() + '<br>'
-                    + selectedDate + ' ' +  $('.selected-hour').text()
-                    + servicePrice + ' ' + serviceCurrency
-                + '</strong>' +
-            '</p>';
-
-        $('#appointment-details').html(html);
-
-        // Customer Details
-        var firstName = GeneralFunctions.escapeHtml($('#first-name').val());
-        var lastName = GeneralFunctions.escapeHtml($('#last-name').val());
-        var phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
-        var email = GeneralFunctions.escapeHtml($('#email').val());
-        var address = GeneralFunctions.escapeHtml($('#address').val());
-        var city = GeneralFunctions.escapeHtml($('#city').val());
-        var zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
-
-        html =
-            '<h4>' + firstName + ' ' + lastName + '</h4>' +
-            '<p>' +
-                EALang['phone'] + ': ' + phoneNumber +
-                '<br/>' +
-                EALang['email'] + ': ' + email +
-                '<br/>' +
-                EALang['address'] + ': ' + address +
-                '<br/>' +
-                EALang['city'] + ': ' + city +
-                '<br/>' +
-                EALang['zip_code'] + ': ' + zipCode +
-            '</p>';
-
-        $('#customer-details').html(html);
-
-        // Update appointment form data for submission to server when the user confirms
-        // the appointment.
         var postData = {};
 
         postData['customer'] = {
@@ -454,14 +374,14 @@ window.FrontendBook = window.FrontendBook || {};
             first_name: $('#first-name').val(),
             email: $('#email').val(),
             phone_number: $('#phone-number').val(),
-            address: $('#address').val(),
-            city: $('#city').val(),
-            zip_code: $('#zip-code').val()
+            address: $('#address').val() || '',
+            city: $('#city').val() || '',
+            zip_code: $('#zip-code').val() || ''
         };
 
+        var start_datetime = $('#select-date').datetimepicker('getValue').toString('yyyy-MM-dd HH:mm:ss');
         postData['appointment'] = {
-            start_datetime: $('#select-date').datepicker('getDate').toString('yyyy-MM-dd')
-                                    + ' ' + $('.selected-hour').text() + ':00',
+            start_datetime: start_datetime.toString('yyyy-MM-dd HH:mm:ss'),
             end_datetime: _calcEndDatetime(),
             notes: $('#notes').val(),
             is_unavailable: false,
@@ -497,9 +417,7 @@ window.FrontendBook = window.FrontendBook || {};
         });
 
         // Add the duration to the start datetime.
-        var startDatetime = $('#select-date').datepicker('getDate').toString('dd-MM-yyyy')
-                + ' ' + $('.selected-hour').text();
-        startDatetime = Date.parseExact(startDatetime, 'dd-MM-yyyy HH:mm');
+        var startDatetime = $('#select-date').datetimepicker('getValue');
         var endDatetime = undefined;
 
         if (selServiceDuration !== undefined && startDatetime !== null) {
@@ -528,9 +446,12 @@ window.FrontendBook = window.FrontendBook || {};
             $('#select-provider').val(appointment['id_users_provider']);
 
             // Set Appointment Date
-            $('#select-date').datepicker('setDate',
-                    Date.parseExact(appointment['start_datetime'], 'yyyy-MM-dd HH:mm:ss'));
-            FrontendBookApi.getAvailableHours($('#select-date').val());
+            $('#select-date').val(Date.parseExact(appointment['start_datetime'], 'yyyy-MM-dd HH:mm:ss'));
+            FrontendBookApi.getAvailableHours(appointment['start_datetime'], function(hours) {
+                $('#select-date').datetimepicker('setOptions', {
+                    allowTimes: hours
+                });
+            });
 
             // Apply Customer's Data
             $('#last-name').val(customer['last_name']);
