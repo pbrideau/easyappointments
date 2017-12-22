@@ -500,4 +500,4 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
         _bindEventHandlers();
     };
 
-})(window.BackendCalendarAppointmentsModal); 
+})(window.BackendCalendarAppointmentsModal);

@@ -34,7 +34,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
      *
      * @param {String} selDate The selected date of which the available hours we need to receive.
      */
-    exports.getAvailableHours = function(selDate) {
+    exports.getAvailableHours = function(selDate, callback) {
         $('#available-hours').empty();
 
         // Find the selected service duration (it is going to be send within the "postData" object).
@@ -61,44 +61,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         };
 
         $.post(postUrl, postData, function(response) {
-            if (!GeneralFunctions.handleAjaxExceptions(response)) {
-                return;
-            }
-
-            // The response contains the available hours for the selected provider and
-            // service. Fill the available hours div with response data.
-            if (response.length > 0) {
-                var currColumn = 1;
-                $('#available-hours').html('<div style="width:50px; float:left;"></div>');
-
-                $.each(response, function(index, availableHour) {
-                    if ((currColumn * 10) < (index + 1)) {
-                        currColumn++;
-                        $('#available-hours').append('<div style="width:50px; float:left;"></div>');
-                    }
-
-                    $('#available-hours div:eq(' + (currColumn - 1) + ')').append(
-                            '<span class="available-hour">' + availableHour + '</span><br/>');
-                });
-
-                if (FrontendBook.manageMode) {
-                    // Set the appointment's start time as the default selection.
-                    $('.available-hour').removeClass('selected-hour');
-                    $('.available-hour').filter(function() {
-                        return $(this).text() === Date.parseExact(
-                                GlobalVariables.appointmentData['start_datetime'],
-                                'yyyy-MM-dd HH:mm:ss').toString('HH:mm');
-                    }).addClass('selected-hour');
-                } else {
-                    // Set the first available hour as the default selection.
-                    $('.available-hour:eq(0)').addClass('selected-hour');
-                }
-
-                FrontendBook.updateConfirmFrame();
-
-            } else {
-                $('#available-hours').text(EALang['no_available_hours']);
-            }
+            callback(response);
         }, 'json').fail(GeneralFunctions.ajaxFailureHandler);
     };
 
@@ -120,6 +83,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         }
 
         var formData = jQuery.parseJSON($('input[name="post_data"]').val());
+
         var postData = {
             csrfToken: GlobalVariables.csrfToken,
             post_data: formData
@@ -222,7 +186,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             .done(function(response) {
                 unavailableDatesBackup = response;
                 selectedDateStringBackup = selectedDateString;
-                _applyUnavailableDates(response, selectedDateString, true); 
+                _applyUnavailableDates(response, selectedDateString, true);
             })
             .fail(GeneralFunctions.ajaxFailureHandler);
     };

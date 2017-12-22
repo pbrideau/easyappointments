@@ -19,7 +19,6 @@ body {
 }
 
 body {
-    background-color: #CAEDF3;
 }
 
 #main {
@@ -67,12 +66,10 @@ body {
 
 #book-appointment-wizard .wizard-frame {
     padding: 10px 20px;
-    height: 530px;
 }
 
 #book-appointment-wizard .wizard-frame .frame-container {
-    height: 440px;
-    margin-bottom: 10px;
+    margin-bottom: 40px;
 }
 
 #book-appointment-wizard .frame-container .frame-title {
@@ -150,7 +147,6 @@ body {
 
 #book-appointment-wizard #available-hours .available-hour:hover {
     font-weight: bold;
-    background-color: #CAEDF3;
     cursor: pointer;
 }
 
